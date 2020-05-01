@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<style>
+table, th, td {
+	border: 1px solid grey;
+	border-collapse: : collapse;
+	/*padding: 5px;*/
+}
+table td:nth-child(odd) {
+  background-color: #f1f1f1;
+}
+table td:nth-child(even) {
+  background-color: #ffffff;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<body>
+
+
+<div ng-app="hotDog" ng-controller="hotDogControl">
+	<p>NAME: <input ng-model="name"> {{name | uppercase}}</p>
+	<p>HEALTH: {{status.health}}</p>
+	<p>WEALTH: {{status.wealth}}</p>
+	<p>REPUTATION: {{status.reputation}}</p>
+	<p>POWER: {{status.power}}</p>
+	<p>ABNORMALITY:</p>
+	<table>
+		<tr ng-repeat="a in abnormal | orderBy: 'name'">
+			<td>{{a.name}}</td>
+			<td>{{a.des}}</td>
+		</tr>
+	</table>
+<br>
+
+<form>
+  WHAT WILL YOU DO?
+  <select ng-model="actions">
+    <option value="">
+    <option value="contract">Take a contract
+    <option value="upgrade">Upgrade and repair
+    <option value="entertainment">Have some fun
+  </select>
+</form>
+
+<div ng-switch="actions">
+  <div ng-switch-when="contract">
+     <h3>Take a contract</h3>
+     <ul>
+     	<li ng-repeat="c in contracts track by $index">{{c.name}}  <span ng-click="takeContract($index)">(x)</span></li>
+     </ul>
+     <button ng-click="newContract()">NEW CONTRACTS</button>
+     <button ng-click="reloadContract()">RELOAD</button>
+  </div>
+  <div ng-switch-when="upgrade">
+     <h3>Upgrade and repair</h3>
+     <form>
+     	UPGRADE:<br>
+     	<input type="number" ng-model="upgradePower"><br>
+     	REPAIR:<br>
+     	<input type="number" ng-model="repairHealth"><br>
+     </form>
+     <p>COST: {{100*upgradePower+100*repairHealth | number}}</p>
+     <p>RESULT: POWER+{{upgradePower}} HEALTH+{{repairHealth}}</p>
+     <button ng-click="upgradeAndRepair(upgradePower,repairHealth)">CONFIRM</button>
+  </div>
+  <div ng-switch-when="entertainment">
+     <h3>Have some fun</h3>
+     DON'T DO IT! <input type="checkbox" ng-model="badE"><br>
+     <div ng-hide="badE">
+     	HAVE FUN<input type="checkbox" ng-model="goodE"><br>
+     	<div ng-show="goodE">
+     		<p>You feel good.</p>
+     		<form>
+	     		<input type="radio" ng-model="fun" value="f">Hangout with a friend
+	     		<input type="radio" ng-model="fun" value="t">Call your parents
+	     		<input type="radio" ng-model="fun" value="p">Play with your dog
+     		</form>
+     		<div ng-switch="fun">
+     			<div ng-switch-when="f">
+     				<p>You don't have any friend.</p>
+     			</div>
+     			<div ng-switch-when="t">
+     				<p>Come on.</p>
+     			</div>
+     			<div ng-switch-when="p">
+     				<p>What dog? A hot dog?</p>
+     			</div>
+     		</div>
+     	</div>
+     </div>
+     <div ng-show="badE">
+     	<form>
+     		<input type="checkbox" ng-model="funS">SEX
+     		<input type="checkbox" ng-model="funD">DRUG
+     		<input type="checkbox" ng-model="funN">NEURAL IMPLANT
+     	</form>
+     	<div ng-show="funS || funD || funN">
+     		<button ng-click="realFun(funS,funD,funN)">DO IT!</button>
+     	</div>
+     </div>
+  </div>
+</div>
+</div>
+
+<script>
+	var app = angular.module('hotDog', []);
+	app.controller('hotDogControl', function($scope) {
+		$scope.name = "John Doe";
+		$scope.status = {health: 100, wealth: 1000, reputation: 50, power: 10};
+		$scope.abnormal = [{name: "sex addict", des: "lose 5 health when having sex"}];
+		$scope.contracts = [{name: "work for yakusa", type: "R", val: 5}];
+		$scope.potentialContracts = [{name: "work for yakusa", type: "R", val: 5}, {name: "kill the target", type: "W", val: 5}, {name: "steal data", type: "W", val: 5}, {name: "bodygard", type: "R", val: 5}, {name: "work for big corp", type: "R", val: 5}, {name: "overwatch", type: "w", val: 5}];
+		$scope.upgradePower = 0;
+		$scope.repairHealth = 0;
+		$scope.takeContract = function(x) {
+			var type = $scope.contracts[x].type;
+			var num = $scope.contracts[x].val;
+			if (type=="H") {
+				$scope.status.health+=num;
+			} else if (type=="W") {
+				$scope.status.wealth+=num;
+			} else if (type=="R") {
+				$scope.status.reputation+=num;
+			} else if (type=="p") {
+				$scope.status.power+=num;
+			} else {}
+			$scope.contracts.splice(x, 1);
+		};
+		$scope.newContract = function() {
+			while ($scope.contracts.length<5) {
+				var randomContract = $scope.potentialContracts[Math.floor(Math.random() * $scope.potentialContracts.length)];
+				$scope.contracts.push(randomContract);
+			}
+		};
+		$scope.reloadContract = function() {
+			$scope.contracts = [];
+			while ($scope.contracts.length<5) {
+				var randomContract = $scope.potentialContracts[Math.floor(Math.random() * $scope.potentialContracts.length)];
+				$scope.contracts.push(randomContract);
+			}
+		};
+		$scope.upgradeAndRepair = function(p,h) {
+			var totalCost = p*100+h*100;
+			// alert($scope.status.wealth);
+			if (totalCost>$scope.status.wealth) {
+				alert("NOT ENOUGH MONEY BITCH!");
+			} else {
+				$scope.status.health += h;
+				$scope.status.power += p;
+				$scope.status.wealth -= totalCost;
+				alert("PLEASURE DOING BUSINESS WITH YOU");
+			}
+		};
+		$scope.realFun = function(funS,funD,funN) {
+			if (funS && funD && funN) {
+				alert("YOU ARE IN HEAVEN!!!")
+			} else {
+				alert("YOU FEEL GOOOOOOD!!!")
+			}
+		}
+	})
+</script>
+
+
+
+</body>
+</html>
