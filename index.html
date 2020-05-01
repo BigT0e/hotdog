@@ -107,7 +107,8 @@ table td:nth-child(even) {
 	app.controller('hotDogControl', function($scope) {
 		$scope.name = "John Doe";
 		$scope.status = {health: 100, wealth: 1000, reputation: 50, power: 10};
-		$scope.abnormal = [{name: "sex addict", des: "lose 5 health when having sex"}];
+		$scope.abnormal = [{name: "addict", des: "lose 5 health when having 'fun'"}, {name: "outdated", des: "you don't upgrade the softwares and you lose 10 power"
+		}];
 		$scope.contracts = [{name: "work for yakusa", type: "R", val: 5}];
 		$scope.potentialContracts = [{name: "work for yakusa", type: "R", val: 5}, {name: "kill the target", type: "W", val: 5}, {name: "steal data", type: "W", val: 5}, {name: "bodygard", type: "R", val: 5}, {name: "work for big corp", type: "R", val: 5}, {name: "overwatch", type: "w", val: 5}];
 		$scope.upgradePower = 0;
